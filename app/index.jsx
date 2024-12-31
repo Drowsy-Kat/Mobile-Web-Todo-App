@@ -64,7 +64,11 @@ export default function Index() {
           keyboardVerticalOffset={Platform.OS === "android" ? 60 : 0}
         ></KeyboardAvoidingView>
 
-        <TodoItems todos={todos} />
+        <TodoItems
+          todos={todos}
+          toggleTodo={toggleTodo}
+          removeTodo={removeTodo}
+        />
 
         <View style={styles.inputContainer}>
           <TextInput

@@ -3,12 +3,12 @@ import { useRef, useEffect } from "react";
 import React from "react";
 import Entypo from "@expo/vector-icons/Entypo";
 
-const TodoItems = ({ todos }) => {
-  console.log({ todos });
+const TodoItems = ({ todos, toggleTodo, removeTodo }) => {
   const flatListRef = useRef();
   useEffect(() => {
     flatListRef.current.scrollToEnd({ animated: true });
   }, [todos]);
+
   const todoRenderItem = ({ item }) => (
     <View style={styles.todoItem}>
       <Text
@@ -27,6 +27,7 @@ const TodoItems = ({ todos }) => {
       </Pressable>
     </View>
   );
+
   return (
     <FlatList
       ref={flatListRef}
