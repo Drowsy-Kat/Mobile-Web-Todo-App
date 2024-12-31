@@ -4,7 +4,6 @@ import {
   TextInput,
   Pressable,
   StyleSheet,
-  FlatList,
   Dimensions,
   KeyboardAvoidingView,
   Platform,
@@ -12,8 +11,10 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useRef, useEffect } from "react";
-import Entypo from "@expo/vector-icons/Entypo";
+
 import { data } from "@/data/todos";
+import { Inter_500Medium, useFonts } from "@expo-google-fonts/inter";
+import TodoItems from "./components/TodoItems";
 
 const { height, width } = Dimensions.get("window");
 
@@ -21,7 +22,13 @@ export default function Index() {
   const [todos, setTodos] = useState(data.sort((a, b) => b.id - a.id));
   const [text, setText] = useState("");
 
-  const flatListRef = useRef();
+  const [loaded, error] = useFonts({
+    Inter_500Medium,
+  });
+
+  if (!loaded && !error) {
+    return null;
+  }
 
   const addTodo = () => {
     if (text.trim()) {
@@ -47,29 +54,6 @@ export default function Index() {
     setTodos(todos.filter((todo) => todo.id !== id));
   };
 
-  const todoRenderItem = ({ item }) => (
-    <View style={styles.todoItem}>
-      <Text
-        style={[styles.todoText, item.completed && styles.compleatedText]}
-        onPress={() => toggleTodo(item.id)}
-      >
-        {item.title}
-      </Text>
-      <Pressable onPress={() => removeTodo(item.id)}>
-        <Entypo
-          name="circle-with-cross"
-          size={36}
-          color="red"
-          selectable={undefined}
-        />
-      </Pressable>
-    </View>
-  );
-
-  useEffect(() => {
-    flatListRef.current.scrollToEnd({ animated: true });
-  }, [todos]);
-
   return (
     <>
       <StatusBar barStyle="light-content" backgroundColor="rgb(12, 12, 12)" />
@@ -80,13 +64,7 @@ export default function Index() {
           keyboardVerticalOffset={Platform.OS === "android" ? 60 : 0}
         ></KeyboardAvoidingView>
 
-        <FlatList
-          ref={flatListRef}
-          data={todos}
-          renderItem={todoRenderItem}
-          keyExtractor={(todo) => todo.id.toString()}
-          contentContainerStyle={styles.flatListContainer}
-        />
+        <TodoItems todos={todos} />
 
         <View style={styles.inputContainer}>
           <TextInput
@@ -120,6 +98,7 @@ const styles = StyleSheet.create({
   },
   input: {
     fontSize: width > 400 ? 16 : 14,
+    fontFamily: "Inter_500Medium",
     padding: 10,
     borderWidth: 1,
     borderColor: "#3073ee",
@@ -148,32 +127,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "rgb(214, 214, 214)",
     textAlign: "center",
-  },
-  todoItem: {
-    padding: 15,
-    backgroundColor: "rgb(28, 30, 32)",
-    marginBottom: 10,
-    borderWidth: 2,
-    borderColor: "rgb(97, 97, 97)",
-    borderRadius: 5,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  todoText: {
-    flex: 1,
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "white",
-  },
-  compleatedText: {
-    textDecorationLine: "line-through",
-    color: "gray",
-  },
-  flatListContainer: {
-    flexGrow: 1,
-    justifyContent: "flex-end",
-    paddingBottom: 10,
   },
 });
 //followed the tutorial below for some help
