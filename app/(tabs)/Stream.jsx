@@ -1,27 +1,24 @@
-import { StyleSheet, Text, View } from "react-native";
-import { useState } from "react";
-import Video from "react-native-video";
+import { useEvent } from "expo";
+import { useVideoPlayer, VideoView } from "expo-video";
+import { StyleSheet, View, Button } from "react-native";
 
-const LiveSource =
+const videoSource =
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
 
-const Stream = () => {
-  const [isPlaying, setIsPlaying] = useState(true);
+export default function VideoScreen() {
+  const player = useVideoPlayer(videoSource, (player) => {});
 
   return (
     <View style={styles.contentContainer}>
-      <Video
-        source={{ uri: LiveSource }}
-        controls={true}
+      <VideoView
         style={styles.video}
-        resizeMode="contain"
-        paused={!isPlaying}
+        player={player}
+        allowsFullscreen
+        allowsPictureInPicture
       />
     </View>
   );
-};
-
-export default Stream;
+}
 
 const styles = StyleSheet.create({
   contentContainer: {
@@ -34,5 +31,8 @@ const styles = StyleSheet.create({
   video: {
     width: 350,
     height: 275,
+  },
+  controlsContainer: {
+    padding: 10,
   },
 });
