@@ -9,13 +9,15 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.CrudApp"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.anonymous.CrudApp"
     },
     "web": {
       "bundler": "metro",
@@ -33,7 +35,12 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      ["expo-video", { "supportsPictureInPicture": true }]
+      [
+        "expo-video",
+        {
+          "supportsPictureInPicture": true
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
