@@ -1,17 +1,18 @@
 import {
   StyleSheet,
-  Dimensions,
   KeyboardAvoidingView,
   Platform,
   StatusBar,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState } from "react";
+import { useState, createContext } from "react";
 
 import { data } from "@/data/todos";
 import { Inter_500Medium, useFonts } from "@expo-google-fonts/inter";
-import TodoItems from "../components/TodoItems";
-import TaskInput from "../components/TaskInput";
+import TodoItems from "../../components/TodoItems";
+import TaskInput from "../../components/TaskInput";
+
+export const TodoContext = createContext();
 
 export default function Index() {
   const [todos, setTodos] = useState(data.sort((a, b) => b.id - a.id));
@@ -59,12 +60,9 @@ export default function Index() {
           behavior={Platform.OS === "android" ? "padding" : "height"}
           keyboardVerticalOffset={Platform.OS === "android" ? 60 : 0}
         ></KeyboardAvoidingView>
-
-        <TodoItems
-          todos={todos}
-          toggleTodo={toggleTodo}
-          removeTodo={removeTodo}
-        />
+        <TodoContext.Provider value={{ toggleTodo, removeTodo, todos }}>
+          <TodoItems />
+        </TodoContext.Provider>
 
         <TaskInput text={text} setText={setText} addTodo={addTodo} />
       </SafeAreaView>
