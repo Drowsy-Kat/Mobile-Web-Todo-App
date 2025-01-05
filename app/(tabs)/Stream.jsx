@@ -1,23 +1,52 @@
+import { useState, useEffect, useRef } from "react";
+import { StyleSheet, View, Text, Image, Platform } from "react-native";
 import { useVideoPlayer, VideoView } from "expo-video";
-import { useState, useEffect } from "react";
-import { StyleSheet, View, Text, Image } from "react-native";
-const videoSource = "http://drowsykat.dev:8088/hls/stream.m3u8";
+import Hls from "hls.js";
+
+const videoSource = "https://drowsykat.dev:8088/mystream.m3u8";
 
 export default function VideoScreen() {
   const [currentTime, setCurrentTime] = useState(0);
+  const videoRef = useRef(null);
 
-  const player = useVideoPlayer(videoSource, (player) => {});
+  const player =
+    Platform.OS !== "web" ? useVideoPlayer(videoSource, (player) => {}) : null;
 
   useEffect(() => {
-    // Automatically play the video when the player is ready
-    if (player && player.play) {
-      player.play();
+    if (Platform.OS === "web") {
+      const videoElement = videoRef.current;
+
+      if (Hls.isSupported()) {
+        const hls = new Hls();
+        hls.loadSource(videoSource);
+        hls.attachMedia(videoElement);
+
+        hls.on(Hls.Events.MANIFEST_PARSED, function () {
+          videoElement.play();
+        });
+
+        videoElement.addEventListener("timeupdate", () => {
+          setCurrentTime(videoElement.currentTime);
+        });
+
+        return () => {
+          hls.destroy();
+          videoElement.removeEventListener("timeupdate", () => {});
+        };
+      } else if (videoElement.canPlayType("application/vnd.apple.mpegurl")) {
+        videoElement.src = videoSource;
+        videoElement.play();
+
+        videoElement.addEventListener("timeupdate", () => {
+          setCurrentTime(videoElement.currentTime);
+        });
+      }
     }
-  }, [player]);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (player && player.currentTime) {
+      if (player?.currentTime) {
         setCurrentTime(player.currentTime);
       }
     }, 1000);
@@ -38,31 +67,49 @@ export default function VideoScreen() {
     return `${hours}:${minutes}:${seconds}`;
   };
 
+  const handleError = (error) => {
+    console.error("Video player error:", error);
+  };
+
   return (
     <View style={styles.contentContainer}>
-      <View style={styles.liveBar}>
-        <Text style={styles.live}> ● Live</Text>
-      </View>
-
-      <VideoView
-        style={styles.video}
-        player={player}
-        allowsFullscreen={true}
-        allowsPictureInPicture={true}
-        showNowPlayingNotification={true}
-        playing={true}
-      />
-      <View style={styles.titleBar}>
-        <Image
-          style={styles.profilePhoto}
-          source={require("../../assets/images/pfp.png")}
-        />
-        <View style={styles.titleContainer}>
-          <Text style={styles.user}>DrowsyKat</Text>
-          <Text style={styles.title}>Live Demo</Text>
+      <View style={styles.videoContainer}>
+        <View style={styles.liveBar}>
+          <Text style={styles.live}> ● Live</Text>
         </View>
-        <View style={styles.timeContainer}>
-          <Text style={styles.time}>{formatTime(currentTime)}</Text>
+
+        {Platform.OS === "web" ? (
+          <video
+            ref={videoRef}
+            style={styles.video}
+            controls
+            onError={handleError}
+            muted={false}
+          />
+        ) : (
+          <VideoView
+            style={styles.video}
+            player={player}
+            allowsFullscreen={true}
+            allowsPictureInPicture={true}
+            showNowPlayingNotification={true}
+            playing={true}
+            onError={handleError}
+          />
+        )}
+
+        <View style={styles.titleBar}>
+          <Image
+            style={styles.profilePhoto}
+            source={require("../../assets/images/pfp.png")}
+          />
+          <View style={styles.titleContainer}>
+            <Text style={styles.user}>DrowsyKat</Text>
+            <Text style={styles.title}>Live Demo</Text>
+          </View>
+          <View style={styles.timeContainer}>
+            <Text style={styles.time}>{formatTime(currentTime)}</Text>
+          </View>
         </View>
       </View>
     </View>
@@ -71,11 +118,11 @@ export default function VideoScreen() {
 
 const styles = StyleSheet.create({
   contentContainer: {
-    flex: 1,
     padding: 5,
-    alignItems: "center",
-    justifyContent: "flex-start",
+    alignItems: "baseline",
     width: "100%",
+    justifyContent: "flex-start",
+    height: "100%",
     backgroundColor: "rgb(22, 22, 22)",
   },
   video: {
@@ -84,6 +131,7 @@ const styles = StyleSheet.create({
   },
   liveBar: {
     width: "100%",
+    alignItems: "center",
     backgroundColor: "rgb(50,50,50)",
     alignContent: "flex-start",
     borderTopLeftRadius: 4,
@@ -128,5 +176,8 @@ const styles = StyleSheet.create({
   },
   timeContainer: {
     justifyContent: "center",
+  },
+  videoContainer: {
+    width: Platform.OS === "web" ? "70%" : "100%",
   },
 });
