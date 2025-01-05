@@ -7,7 +7,7 @@ works on web and android but i dont really wana find my old iphone from 5 years 
 
 ## Get started
 
-if u wana try it for some reason do this since i dont really wana try hosting this rn i have a whole (4) essays due after the new year
+if u wana try it for some reason do this since i dont really wana try hosting this rn i have a whole 4 essays due after the new year
 
 1. Install dependencies
 
