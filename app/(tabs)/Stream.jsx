@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, Image, Platform } from "react-native";
 import { useVideoPlayer, VideoView } from "expo-video";
 import Hls from "hls.js";
 
+// the source of the HLS Stream
 const videoSource = "https://drowsykat.dev:8088/mystream.m3u8";
 
 export default function VideoScreen() {
@@ -11,6 +12,11 @@ export default function VideoScreen() {
 
   const player =
     Platform.OS !== "web" ? useVideoPlayer(videoSource, (player) => {}) : null;
+
+  // sets the page title to Stream on the web
+  if (Platform.OS === "web") {
+    document.title = "Stream";
+  }
 
   useEffect(() => {
     if (Platform.OS === "web") {
@@ -131,7 +137,7 @@ const styles = StyleSheet.create({
   },
   liveBar: {
     width: "100%",
-    alignItems: "center",
+    alignItems: "flex-start",
     backgroundColor: "rgb(50,50,50)",
     alignContent: "flex-start",
     borderTopLeftRadius: 4,

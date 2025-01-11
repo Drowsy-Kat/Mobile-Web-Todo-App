@@ -25,9 +25,15 @@ export default function Index() {
   if (!loaded && !error) {
     return null;
   }
+  // sets the page title to To-Do App on the web
+  if (Platform.OS === "web") {
+    document.title = "To-Do App";
+  }
 
+  //  function to add new todo to the list
   const addTodo = () => {
     if (text.trim()) {
+      //create a id for the new todo
       const newId =
         todos.length > 0 ? Math.max(...todos.map((todo) => todo.id)) + 1 : 1;
 
@@ -35,10 +41,8 @@ export default function Index() {
       setText("");
     }
   };
-  if (Platform.OS === "web") {
-    document.title = "To-Do App";
-  }
 
+  // toggles a todos compleated status
   const toggleTodo = (id) => {
     setTodos((t) =>
       t.map((todo) =>
@@ -47,19 +51,18 @@ export default function Index() {
     );
   };
 
+  //removes a todo
   const removeTodo = (id) => {
     setTodos(todos.filter((todo) => todo.id !== id));
   };
 
   return (
     <>
+      {/* set the colour of the status bar on mobile devices */}
       <StatusBar barStyle="light-content" backgroundColor="rgb(12, 12, 12)" />
+
+      {/* safe area stops items from displaying where they will be cut out due to the device shape e.g: rounded corners or camera notches */}
       <SafeAreaView style={styles.container}>
-        <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior={Platform.OS === "android" ? "padding" : "height"}
-          keyboardVerticalOffset={Platform.OS === "android" ? 60 : 0}
-        ></KeyboardAvoidingView>
         <TodoContext.Provider value={{ toggleTodo, removeTodo, todos }}>
           <TodoItems />
         </TodoContext.Provider>
