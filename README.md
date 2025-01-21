@@ -1,6 +1,7 @@
 # react **native** todo app
 
 i made another todo app this time in react native :0
+this one also has a stream view for capturing a hls stream cuz i wanted to try doing that
 once again this was for practice but ill probebly use this for my assignment its only worth like 20marks anyways so this should do
 
 works on web and android but i dont really wana find my old iphone from 5 years ago to see if it works on ios but its probebly a no tbh
