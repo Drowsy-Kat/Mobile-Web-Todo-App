@@ -1,13 +1,16 @@
 import { Stack } from "expo-router";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <Stack>
         <Stack.Screen
-          name="index"
-          options={{ title: "Todo", headerShown: false }}
+          name="(tabs)"
+          options={{
+            headerShown: false,
+            navigationBarColor: "rgb(22, 22, 22)",
+          }}
         />
       </Stack>
     </SafeAreaProvider>
